@@ -20,21 +20,21 @@ export class AlbumService {
 
   async getAll(): Promise<Album[]> {
     const albums = this.albums;
-    const promises = [];
+    // const promises = [];
 
-    for (const album of albums) {
-      promises.push(this.addArtistName(album));
-    }
+    // for (const album of albums) {
+    //   promises.push(this.addInfo(album));
+    // }
 
-    await Promise.all(promises);
+    // await Promise.all(promises);
 
-    return this.albums;
+    return albums;
   }
 
   async get(id: string): Promise<Album> {
     const returnAlbum = this.albums.find((album) => album.id === id);
     if (!returnAlbum) this.notFound();
-    await this.addArtistName(returnAlbum);
+    //await this.addInfo(returnAlbum);
 
     return returnAlbum;
   }
@@ -73,14 +73,14 @@ export class AlbumService {
     return true;
   }
 
-  private async addArtistName(album: Album): Promise<void> {
+  private async addInfo(album: Album): Promise<void> {
     try {
     } catch (err: unknown) {
       console.log((err as Error).message);
     }
     const artist: Artist = await this.artistService.get(album.artistId);
 
-    album.artistName = artist.name;
+    album.artist = artist.name;
   }
 
   private notFound() {
