@@ -5,7 +5,6 @@ import { albumDb } from '../../database/album.data';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { ArtistService } from '../artist/artist.service';
-import { Artist } from 'src/interfaces/artist.interface';
 
 @Injectable()
 export class AlbumService {
@@ -19,22 +18,12 @@ export class AlbumService {
   }
 
   async getAll(): Promise<Album[]> {
-    const albums = this.albums;
-    // const promises = [];
-
-    // for (const album of albums) {
-    //   promises.push(this.addInfo(album));
-    // }
-
-    // await Promise.all(promises);
-
-    return albums;
+    return this.albums;
   }
 
   async get(id: string): Promise<Album> {
     const returnAlbum = this.albums.find((album) => album.id === id);
     if (!returnAlbum) this.notFound();
-    //await this.addInfo(returnAlbum);
 
     return returnAlbum;
   }
@@ -71,16 +60,6 @@ export class AlbumService {
 
     this.albums.splice(albumIdx, 1);
     return true;
-  }
-
-  private async addInfo(album: Album): Promise<void> {
-    try {
-    } catch (err: unknown) {
-      console.log((err as Error).message);
-    }
-    const artist: Artist = await this.artistService.get(album.artistId);
-
-    album.artist = artist.name;
   }
 
   private notFound() {
