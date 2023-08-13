@@ -16,10 +16,14 @@ import { AlbumService } from './album.service';
 import { Album } from 'src/interfaces/album.interface';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { FavoriteService } from '../favorite/favorite.service';
 
 @Controller('album')
 export class AlbumController {
-  constructor(private albumService: AlbumService) {}
+  constructor(
+    private albumService: AlbumService,
+    private readonly favoriteService: FavoriteService,
+  ) {}
 
   @Get()
   async getAll(): Promise<Album[]> {
@@ -50,9 +54,11 @@ export class AlbumController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteSpecific(
+  async deleteSpecific(
     @Param('id', new ParseUUIDPipe()) id: string,
   ): Promise<boolean> {
-    return this.albumService.delete(id);
+    const result = await this.albumService.delete(id);
+    await this.favoriteService.remove(id, 'albums').catch(() => true);
+    return result;
   }
 }

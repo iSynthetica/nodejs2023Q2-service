@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { Favorites } from '../../interfaces/favorites.interface';
 import { favData } from '../../database/favorites.data';
@@ -67,20 +68,13 @@ export class FavoriteService {
   }
 
   async remove(id: string, type: FavoriteType): Promise<FavoritesCollection> {
-    const provider = this.getProvider(type);
-    try {
-      await provider.get(id);
-    } catch (err: unknown) {
-      throw new HttpException(
-        (err as Error).message,
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-
     const itemIdx = this.favs[type].findIndex((item) => item === id);
 
-    if (itemIdx !== -1) this.favs[type].splice(itemIdx, 1);
+    if (itemIdx === -1) {
+      throw new NotFoundException(`Favourite item not found in ${type}`);
+    }
 
+    this.favs[type].splice(itemIdx, 1);
     return this.getAll();
   }
 

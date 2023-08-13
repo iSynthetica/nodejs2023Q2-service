@@ -16,10 +16,14 @@ import { Artist } from '../../interfaces/artist.interface';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { FavoriteService } from '../favorite/favorite.service';
 
 @Controller('artist')
 export class ArtistController {
-  constructor(private artistService: ArtistService) {}
+  constructor(
+    private artistService: ArtistService,
+    private readonly favoriteService: FavoriteService,
+  ) {}
   @Get()
   async getAll(): Promise<Artist[]> {
     return this.artistService.getAll();
@@ -49,9 +53,11 @@ export class ArtistController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteSpecific(
+  async deleteSpecific(
     @Param('id', new ParseUUIDPipe()) id: string,
   ): Promise<boolean> {
-    return this.artistService.delete(id);
+    const result = await this.artistService.delete(id);
+    await this.favoriteService.remove(id, 'artists').catch(() => true);
+    return result;
   }
 }

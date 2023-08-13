@@ -8,7 +8,7 @@ import { AlbumModule } from './modules/album/album.module';
 import { FavoriteModule } from './modules/favorite/favorite.module';
 
 @Module({
-  imports: [UserModule, TrackModule, ArtistModule, AlbumModule, FavoriteModule],
+  imports: [UserModule, ArtistModule, AlbumModule, TrackModule, FavoriteModule],
   controllers: [AppController],
   providers: [AppService],
 })

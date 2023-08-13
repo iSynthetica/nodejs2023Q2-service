@@ -9,8 +9,6 @@ import { Track } from '../../interfaces/track.interface';
 import { trackDb } from '../../database/track.data';
 import { ArtistService } from '../artist/artist.service';
 import { AlbumService } from '../album/album.service';
-import { Artist } from '../../interfaces/artist.interface';
-import { Album } from '../../interfaces/album.interface';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 
@@ -29,21 +27,12 @@ export class TrackService {
   }
 
   async getAll(): Promise<Track[]> {
-    const tracks = this.tracks;
-    // const promises = [];
-
-    // for (const track of tracks) {
-    //   promises.push(this.addInfo(track));
-    // }
-
-    // await Promise.all(promises);
-    return tracks;
+    return this.tracks;
   }
 
   async get(id: string): Promise<Track> {
     const returnTrack = this.tracks.find((track) => track.id === id);
     if (!returnTrack) this.notFound();
-    // await this.addInfo(returnTrack);
 
     return returnTrack;
   }
@@ -82,16 +71,6 @@ export class TrackService {
 
     this.tracks.splice(trackIdx, 1);
     return true;
-  }
-
-  private async addInfo(track: Track): Promise<void> {
-    const [artist, album] = await Promise.all([
-      this.artistService.get(track.artistId).catch(() => false),
-      this.albumService.get(track.albumId).catch(() => false),
-    ]);
-
-    if (artist) track.artist = (artist as Artist).name;
-    if (album) track.album = (album as Album).name;
   }
 
   private notFound() {

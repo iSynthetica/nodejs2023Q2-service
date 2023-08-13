@@ -16,10 +16,14 @@ import { Track } from '../../interfaces/track.interface';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { FavoriteService } from '../favorite/favorite.service';
 
 @Controller('track')
 export class TrackController {
-  constructor(private trackService: TrackService) {}
+  constructor(
+    private trackService: TrackService,
+    private readonly favoriteService: FavoriteService,
+  ) {}
 
   @Get()
   async getAll(): Promise<Track[]> {
@@ -50,9 +54,11 @@ export class TrackController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteSpecific(
+  async deleteSpecific(
     @Param('id', new ParseUUIDPipe()) id: string,
   ): Promise<boolean> {
-    return this.trackService.delete(id);
+    const result = await this.trackService.delete(id);
+    await this.favoriteService.remove(id, 'tracks').catch(() => true);
+    return result;
   }
 }
