@@ -17,11 +17,13 @@ import { Album } from 'src/interfaces/album.interface';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { FavoriteService } from '../favorite/favorite.service';
+import { TrackService } from '../track/track.service';
 
 @Controller('album')
 export class AlbumController {
   constructor(
-    private albumService: AlbumService,
+    private readonly albumService: AlbumService,
+    private readonly trackService: TrackService,
     private readonly favoriteService: FavoriteService,
   ) {}
 
@@ -59,6 +61,22 @@ export class AlbumController {
   ): Promise<boolean> {
     const result = await this.albumService.delete(id);
     await this.favoriteService.remove(id, 'albums').catch(() => true);
+    let tracks = await this.trackService.getAll();
+    console.log(tracks.length);
+
+    tracks = tracks.filter((track) => track.albumId === id);
+    console.log(tracks.length);
+
+    if (tracks.length) {
+      const promises = [];
+
+      for (const track of tracks) {
+        promises.push(this.trackService.update(track.id, { albumId: null }));
+      }
+
+      await Promise.all(promises);
+    }
+
     return result;
   }
 }

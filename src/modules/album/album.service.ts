@@ -29,8 +29,11 @@ export class AlbumService {
   }
 
   async create(data: CreateAlbumDto): Promise<Album> {
-    const artistId = data.artistId;
-    await this.artistService.get(artistId);
+    if (data.artistId !== undefined) {
+      await this.artistService.get(data.artistId);
+    } else {
+      data.artistId = null;
+    }
 
     const newAlbum: Album = {
       id: uuidv4(),
@@ -49,6 +52,9 @@ export class AlbumService {
 
     if (data.name) updatedAlbum.name = data.name;
     if (data.year) updatedAlbum.year = data.year;
+    if (data.artistId !== undefined) {
+      updatedAlbum.artistId = data.artistId;
+    }
 
     return updatedAlbum;
   }

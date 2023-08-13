@@ -38,12 +38,21 @@ export class TrackService {
   }
 
   async create(data: CreateTrackDto): Promise<Track> {
-    const [artist, album] = await Promise.all([
-      this.artistService.get(data.artistId),
-      this.albumService.get(data.albumId),
-    ]);
+    let artist = null;
+    let album = null;
 
-    if (artist.id !== album.artistId) {
+    if (data.artistId) {
+      artist = await this.artistService.get(data.artistId);
+    } else {
+      data.artistId = null;
+    }
+    if (data.albumId) {
+      await this.albumService.get(data.albumId);
+    } else {
+      album = data.albumId = null;
+    }
+
+    if (artist && album && artist.id !== album.artistId) {
       throw new BadRequestException("Album doesn't belong to the artist");
     }
 
@@ -60,6 +69,12 @@ export class TrackService {
 
     if (data.name) updatedTrack.name = data.name;
     if (data.duration) updatedTrack.duration = data.duration;
+    if (data.artistId !== undefined) {
+      updatedTrack.artistId = data.artistId;
+    }
+    if (data.albumId !== undefined) {
+      updatedTrack.albumId = data.albumId;
+    }
 
     return updatedTrack;
   }
