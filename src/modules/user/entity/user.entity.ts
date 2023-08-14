@@ -28,9 +28,16 @@ export class UserEntity {
   @VersionColumn()
   version: number;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  createdAt: number;
 
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
+  updatedAt: number;
 }

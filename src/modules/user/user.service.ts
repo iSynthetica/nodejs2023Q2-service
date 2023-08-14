@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import {
   ConflictException,
   ForbiddenException,
@@ -24,58 +23,53 @@ export class UserService {
     this.users = usersDb;
   }
 
-  async getAll(): Promise<Omit<User, 'password'>[]> {
+  async getAll(): Promise<Omit<UserEntity, 'password'>[]> {
+    const allUsers = await this.userRepository.find();
     const returnUsers = [];
-    for (const user of this.users) {
+    for (const user of allUsers) {
       returnUsers.push(this.sanitizeUserDto(user));
     }
 
     return returnUsers;
   }
 
-  async get(id: string): Promise<Omit<User, 'password'> | undefined> {
-    const returnUser = this.users.find((user) => user.id === id);
+  async get(id: string): Promise<Omit<UserEntity, 'password'>> {
+    const returnUser = await this.userRepository.findOne({ where: { id } });
 
     if (!returnUser) {
       throw new NotFoundException('User not found');
     }
 
-    return returnUser ? this.sanitizeUserDto(returnUser) : returnUser;
+    return this.sanitizeUserDto(returnUser);
   }
 
-  async create(data: CreateUserDto): Promise<Omit<User, 'password'>> {
+  async create(data: CreateUserDto): Promise<Omit<UserEntity, 'password'>> {
     const existedUser = this.users.find((user) => user.login === data.login);
     if (existedUser) {
       throw new ConflictException('Login already taken');
     }
-    const user: User = {
-      id: uuidv4(),
-      ...data,
-      version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
 
-    this.users.push(user);
+    const newuser = this.userRepository.create({ ...data });
+    const returnUser = await this.userRepository.save(newuser);
 
-    return this.sanitizeUserDto(user);
+    console.log(returnUser);
+    return this.sanitizeUserDto(returnUser);
   }
 
   async delete(id: string): Promise<boolean> {
-    const userIdx = this.users.findIndex((user) => user.id === id);
-    if (userIdx === -1) {
+    const existedUser = await this.userRepository.findOne({ where: { id } });
+    if (!existedUser) {
       throw new NotFoundException('User not found');
     }
-    this.users.splice(userIdx, 1);
+    await this.userRepository.delete(id);
     return true;
   }
 
   async updatePassword(
     id: string,
     data: UpdatePasswordDto,
-  ): Promise<Omit<User, 'password'>> {
-    const updatedUser = this.users.find((user) => user.id === id);
-
+  ): Promise<Omit<UserEntity, 'password'>> {
+    const updatedUser = await this.userRepository.findOne({ where: { id } });
     if (!updatedUser) {
       throw new NotFoundException('User not found');
     }
@@ -84,14 +78,13 @@ export class UserService {
       throw new ForbiddenException('Wrong password');
     }
 
-    updatedUser.password = data.newPassword;
-    updatedUser.version += updatedUser.version;
-    updatedUser.updatedAt = Date.now();
+    await this.userRepository.update(id, { password: data.newPassword });
+    const returnUser = await this.userRepository.findOne({ where: { id } });
 
-    return this.sanitizeUserDto(updatedUser);
+    return this.sanitizeUserDto(returnUser);
   }
 
-  private sanitizeUserDto(user: User): Omit<User, 'password'> {
+  private sanitizeUserDto(user: UserEntity): Omit<UserEntity, 'password'> {
     const sanitizedUser = { ...user };
     delete sanitizedUser.password;
     return sanitizedUser;
