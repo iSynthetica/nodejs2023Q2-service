@@ -4,24 +4,18 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { User } from '../../interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { usersDb } from '../../database/user.data';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
-  private readonly users: User[];
-
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
-  ) {
-    this.users = usersDb;
-  }
+  ) {}
 
   async getAll(): Promise<Omit<UserEntity, 'password'>[]> {
     const allUsers = await this.userRepository.find();
@@ -44,15 +38,14 @@ export class UserService {
   }
 
   async create(data: CreateUserDto): Promise<Omit<UserEntity, 'password'>> {
-    const existedUser = this.users.find((user) => user.login === data.login);
-    if (existedUser) {
+    let returnUser = null;
+    try {
+      const newuser = this.userRepository.create({ ...data });
+      returnUser = await this.userRepository.save(newuser);
+    } catch (err) {
       throw new ConflictException('Login already taken');
     }
 
-    const newuser = this.userRepository.create({ ...data });
-    const returnUser = await this.userRepository.save(newuser);
-
-    console.log(returnUser);
     return this.sanitizeUserDto(returnUser);
   }
 
@@ -87,6 +80,10 @@ export class UserService {
   private sanitizeUserDto(user: UserEntity): Omit<UserEntity, 'password'> {
     const sanitizedUser = { ...user };
     delete sanitizedUser.password;
+    sanitizedUser.createdAt =
+      Date.parse(sanitizedUser.createdAt as unknown as string) / 1000;
+    sanitizedUser.updatedAt =
+      Date.parse(sanitizedUser.updatedAt as unknown as string) / 1000;
     return sanitizedUser;
   }
 }

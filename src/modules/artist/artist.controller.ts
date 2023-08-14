@@ -12,13 +12,13 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { Artist } from '../../interfaces/artist.interface';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { FavoriteService } from '../favorite/favorite.service';
 import { TrackService } from '../track/track.service';
 import { AlbumService } from '../album/album.service';
+import { ArtistEntity } from './entity/artist.entity';
 
 @Controller('artist')
 export class ArtistController {
@@ -29,20 +29,20 @@ export class ArtistController {
     private readonly albumService: AlbumService,
   ) {}
   @Get()
-  async getAll(): Promise<Artist[]> {
+  async getAll(): Promise<ArtistEntity[]> {
     return this.artistService.getAll();
   }
 
   @Get(':id')
   async getSpecific(
     @Param('id', new ParseUUIDPipe()) id: string,
-  ): Promise<Artist> {
+  ): Promise<ArtistEntity> {
     return this.artistService.get(id);
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
-  async createOne(@Body() data: CreateArtistDto): Promise<Artist> {
+  async createOne(@Body() data: CreateArtistDto): Promise<ArtistEntity> {
     return this.artistService.create(data);
   }
 
@@ -51,7 +51,7 @@ export class ArtistController {
   update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() data: UpdateArtistDto,
-  ): Promise<Artist> {
+  ): Promise<ArtistEntity> {
     return this.artistService.update(id, data);
   }
 
