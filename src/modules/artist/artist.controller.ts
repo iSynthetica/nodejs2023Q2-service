@@ -17,11 +17,13 @@ import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { FavoriteService } from '../favorite/favorite.service';
+import { TrackService } from '../track/track.service';
 
 @Controller('artist')
 export class ArtistController {
   constructor(
     private artistService: ArtistService,
+    private readonly trackService: TrackService,
     private readonly favoriteService: FavoriteService,
   ) {}
   @Get()
@@ -58,6 +60,21 @@ export class ArtistController {
   ): Promise<boolean> {
     const result = await this.artistService.delete(id);
     await this.favoriteService.remove(id, 'artists').catch(() => true);
+    let tracks = await this.trackService.getAll();
+    console.log(tracks.length);
+    tracks = tracks.filter((track) => track.artistId === id);
+    console.log(tracks.length);
+
+    if (tracks.length) {
+      const promises = [];
+
+      for (const track of tracks) {
+        promises.push(this.trackService.update(track.id, { artistId: null }));
+      }
+
+      await Promise.all(promises);
+    }
+
     return result;
   }
 }
