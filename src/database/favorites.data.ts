@@ -1,0 +1,43 @@
+import { Favorites } from '../interfaces/favorites.interface';
+
+export const favData: Favorites = {
+  artists: [
+    '60cb2891-0f25-4904-95f9-edc350aa9061',
+    '00ead943-ff61-42c9-9ee3-f7a103f229dd',
+    '977a6a50-38ef-417b-b8d4-bfb74f56e8b9',
+    '497dde12-6a1e-4bee-b4a3-4c0b77014ecc',
+  ],
+  albums: [
+    '41689674-9c42-4e5e-84d7-7eee07849b02',
+    'b9a29f8f-5c22-4b46-a73c-faa8f9721b18',
+    '60af4b4a-2700-4b14-8ea8-453f42b717f8',
+    '19589404-60e2-4016-bd35-5206ad02d642',
+    '2470badd-eb19-4fa3-9824-e73eca76e1a3',
+    'c5cbf0ce-0046-4dea-b584-5b6bc9822913',
+    'db2a8695-afa3-4b4d-a84b-0b0422efdb7d',
+    'ee292112-f64a-48fd-8e11-e3538c63f4f4',
+    'd75ede30-964a-4095-87f9-d2223eea258e',
+  ],
+  tracks: [
+    'e235589c-1356-4520-9ec7-7e41f77751fe',
+    '60004b18-bc35-4bee-a14c-4436b101a8d0',
+    '7e6f28d9-5865-4fb4-955c-8fa0b5ef59d6',
+    '65b2fa7e-f777-49ec-a8cd-19ebfe71ccbb',
+    '188dd075-e32c-49e9-b4cb-665112707900',
+    '8f1c58e4-005b-4463-b359-affce3550a37',
+    'c8ed507e-dde8-4650-9833-394badf4dd4f',
+    'f6d5d07e-0fbc-4d1b-9379-f2146f91f9a6',
+    'aa4ff0ea-8024-4fbf-ac19-5a5d140c614d',
+    'ac381b5e-1017-4796-99b3-6584543a503c',
+    '8d1693c6-bc34-4e22-bd43-08087dad93be',
+    'c1698555-12e8-4b29-93de-c9eb8705d6cb',
+    '545193a3-a388-42aa-b002-d1ac8619a6eb',
+    '13efe6db-ed41-41da-81fb-65f74ad794f7',
+    'e816a68c-38d3-4f21-8c31-c4b652ba55bf',
+    'a775513a-a780-458c-aace-035caf60d52a',
+    '9b2156cc-65a3-42a9-8d8f-15bb542bba86',
+    '0cecd863-f088-44c7-a3b1-5eaedca1239b',
+    '35dd0c1e-bb91-46d5-9caf-086b53b92367',
+    '46062766-765f-444b-a964-6f1718c7d2c5',
+  ],
+};
