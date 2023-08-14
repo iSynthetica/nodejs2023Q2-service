@@ -13,11 +13,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
-import { Album } from 'src/interfaces/album.interface';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { FavoriteService } from '../favorite/favorite.service';
 import { TrackService } from '../track/track.service';
+import { AlbumEntity } from './entity/album.entity';
 
 @Controller('album')
 export class AlbumController {
@@ -28,20 +28,20 @@ export class AlbumController {
   ) {}
 
   @Get()
-  async getAll(): Promise<Album[]> {
+  async getAll(): Promise<AlbumEntity[]> {
     return this.albumService.getAll();
   }
 
   @Get(':id')
   async getSpecific(
     @Param('id', new ParseUUIDPipe()) id: string,
-  ): Promise<Album> {
+  ): Promise<AlbumEntity> {
     return this.albumService.get(id);
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
-  async createOne(@Body() data: CreateAlbumDto): Promise<Album> {
+  async createOne(@Body() data: CreateAlbumDto): Promise<AlbumEntity> {
     return this.albumService.create(data);
   }
 
@@ -50,7 +50,7 @@ export class AlbumController {
   async updateSpecific(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() data: UpdateAlbumDto,
-  ): Promise<Album> {
+  ): Promise<AlbumEntity> {
     return this.albumService.update(id, data);
   }
 
@@ -62,10 +62,7 @@ export class AlbumController {
     const result = await this.albumService.delete(id);
     await this.favoriteService.remove(id, 'albums').catch(() => true);
     let tracks = await this.trackService.getAll();
-    console.log(tracks.length);
-
     tracks = tracks.filter((track) => track.albumId === id);
-    console.log(tracks.length);
 
     if (tracks.length) {
       const promises = [];
