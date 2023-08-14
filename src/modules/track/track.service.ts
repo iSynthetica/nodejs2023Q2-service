@@ -11,6 +11,9 @@ import { ArtistService } from '../artist/artist.service';
 import { AlbumService } from '../album/album.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TrackEntity } from './entity/track.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TrackService {
@@ -22,7 +25,10 @@ export class TrackService {
   @Inject(AlbumService)
   private readonly albumService: AlbumService;
 
-  constructor() {
+  constructor(
+    @InjectRepository(TrackEntity)
+    private userRepository: Repository<TrackEntity>,
+  ) {
     this.tracks = trackDb;
   }
 

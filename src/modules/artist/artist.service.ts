@@ -5,12 +5,18 @@ import { v4 as uuidv4 } from 'uuid';
 import { artistsDb } from '../../database/artist.data';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ArtistEntity } from './entity/artist.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ArtistService {
   private readonly artists: Artist[];
 
-  constructor() {
+  constructor(
+    @InjectRepository(ArtistEntity)
+    private artistRepository: Repository<ArtistEntity>,
+  ) {
     this.artists = artistsDb;
   }
 

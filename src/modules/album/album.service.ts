@@ -5,6 +5,9 @@ import { albumDb } from '../../database/album.data';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { ArtistService } from '../artist/artist.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AlbumEntity } from './entity/album.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AlbumService {
@@ -13,7 +16,10 @@ export class AlbumService {
   @Inject(ArtistService)
   private readonly artistService: ArtistService;
 
-  constructor() {
+  constructor(
+    @InjectRepository(AlbumEntity)
+    private userRepository: Repository<AlbumEntity>,
+  ) {
     this.albums = albumDb;
   }
 
